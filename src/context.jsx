@@ -13,7 +13,6 @@ const getInitialDarkMode = () => {
   } else return { prefersDarkMode }
 }
 const newVar = getInitialDarkMode()
-console.log(`prefer: ${newVar}`)
 export const AppProvider = ({ children }) => {
   const [isDarkTheme, setIsDarkTheme] = useState(getInitialDarkMode())
   const [searchTerm, setSearchTerm] = useState('cat')
@@ -29,11 +28,38 @@ export const AppProvider = ({ children }) => {
     document.body.classList.toggle('dark-theme', isDarkTheme)
   }, [isDarkTheme])
 
-  console.log(`darkmode:${isDarkTheme}`)
+  const downloadImg = (url, fileName) => {
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        // Create a temporary anchor element
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = fileName
+
+        // Append the anchor to the document body
+        document.body.appendChild(link)
+
+        // Simulate a click event to trigger the download
+        link.click()
+
+        // Remove the anchor from the document body
+        document.body.removeChild(link)
+      })
+      .catch((error) => {
+        console.error('Error downloading image:', error)
+      })
+  }
 
   return (
     <AppContext.Provider
-      value={{ isDarkTheme, toggleDarkTheme, searchTerm, setSearchTerm }}
+      value={{
+        isDarkTheme,
+        toggleDarkTheme,
+        searchTerm,
+        setSearchTerm,
+        downloadImg,
+      }}
     >
       {children}
     </AppContext.Provider>
